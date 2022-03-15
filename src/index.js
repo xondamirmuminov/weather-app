@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import "weather-icons/css/weather-icons.css";
 
 ReactDOM.render(
   <React.StrictMode>
