@@ -7,6 +7,7 @@ import Cloudy from "./assets/cloudy.jpg";
 import Rain from "./assets/rain.jpg";
 import Snow from "./assets/snow.jpg";
 import Thunder from "./assets/thunderstorm.jpg";
+import { AiOutlineSearch } from "react-icons/all";
 
 const API_KEY = "fde1407fe24dea0c61cd7c4b060cc81d";
 
@@ -14,7 +15,10 @@ function App() {
   const [data, setData] = useState({});
   const [icon, setIcon] = useState("");
   const [bg, setBg] = useState("");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState({
+    city: "",
+    country: "",
+  });
   const weatherIcon = {
     Thunderstorm: "wi-thunderstorm",
     Drizzle: "wi-sleet",
@@ -69,15 +73,38 @@ function App() {
 
   const fetchData = async (position) => {
     const { latitude, longitude } = position?.coords;
-    const { data } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
-    );
-    setData(data);
+    if (latitude && longitude) {
+      const { data } = await axios.get(
+        `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+      );
+      setData(data);
+    } else {
+      const { data } = await axios.get(
+        `http://api.openweathermap.org/data/2.5/weather?q=London&appid=${API_KEY}`
+      );
+      setData(data);
+    }
   };
 
   const calCelsius = (temp) => {
     let cell = Math.floor(temp - 273.15);
     return cell;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearch((state) => ({ ...state, [name]: value }));
+  };
+
+  const handleSearch = async () => {
+    if (search.country || search.city) {
+      const { data } = await axios.get(
+        `http://api.openweathermap.org/data/2.5/weather?q=${search.city},${search.country}&appid=${API_KEY}`
+      );
+      setData(data);
+    } else {
+      geolocation();
+    }
   };
 
   useEffect(() => {
@@ -91,19 +118,40 @@ function App() {
 
   return (
     <StyledApp bg={bg}>
+      <div className="search">
+        <input
+          name="city"
+          type="text"
+          placeholder="City"
+          value={search.city}
+          onChange={handleInputChange}
+        />
+        <input
+          name="country"
+          type="text"
+          placeholder="Country"
+          value={search.country}
+          onChange={handleInputChange}
+        />
+        <button type="button" onClick={handleSearch}>
+          <AiOutlineSearch size={20} /> Search
+        </button>
+      </div>
       <div className="home">
         <h3 className="home__city">
           {data?.name}, {data?.sys?.country}
         </h3>
-        <i className={`wi ${icon} display-1 home__icon`} />
-        <h1 className="home__deg">
-          {calCelsius(data?.main?.temp) ?? 0}&#186;C
-        </h1>
-        <div className="home__temp">
-          <h2>{calCelsius(data?.main?.temp_min) ?? 0}&#186;C</h2>
-          <h2>{calCelsius(data?.main?.temp_max) ?? 0}&#186;C</h2>
+        <div className="home__inner-deg">
+          <i className={`wi ${icon} display-1 home__icon`} />
+          <h1 className="home__deg">
+            {calCelsius(data?.main?.temp) ?? 0}&#186;C
+          </h1>
         </div>
         <p className="home__description">{data?.weather?.[0]?.description}</p>
+        <div className="home__temp">
+          <h2>Maximum Temp: {calCelsius(data?.main?.temp_min) ?? 0}&#186;C</h2>
+          <h2>Minimum Temp: {calCelsius(data?.main?.temp_max) ?? 0}&#186;C</h2>
+        </div>
         <div className="home__info">
           <p>Feels like {calCelsius(data?.main?.feels_like) ?? 0}&#186;C</p>
           <p>Pressure {data?.main?.pressure ?? 0}hPa</p>
