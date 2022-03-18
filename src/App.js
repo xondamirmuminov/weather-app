@@ -13,6 +13,7 @@ const API_KEY = "fde1407fe24dea0c61cd7c4b060cc81d";
 
 function App() {
   const [data, setData] = useState({});
+  const [forecast, setForecast] = useState({});
   const [icon, setIcon] = useState("");
   const [bg, setBg] = useState("");
   const [search, setSearch] = useState({
@@ -66,8 +67,8 @@ function App() {
   };
 
   const geolocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(fetchData);
+    if (navigator?.geolocation) {
+      navigator?.geolocation?.getCurrentPosition(fetchData);
     }
   };
 
@@ -75,14 +76,22 @@ function App() {
     const { latitude, longitude } = position?.coords;
     if (latitude && longitude) {
       const { data } = await axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
       );
       setData(data);
+      const { data: forecast } =
+        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&lat=${latitude}&lon=${longitude}&cnt=8&appid=${API_KEY}
+      `);
+      setForecast(forecast);
     } else {
       const { data } = await axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?q=London&appid=${API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${API_KEY}`
       );
       setData(data);
+      const { data: forecast } =
+        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&q=London&cnt=8&appid=${API_KEY}
+    `);
+      setForecast(forecast);
     }
   };
 
@@ -102,6 +111,10 @@ function App() {
         `http://api.openweathermap.org/data/2.5/weather?q=${search.city},${search.country}&appid=${API_KEY}`
       );
       setData(data);
+      const { data: forecast } =
+        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&q=${search.city},${search.country}&cnt=8&appid=${API_KEY}
+  `);
+      setForecast(forecast);
     } else {
       geolocation();
     }
@@ -157,6 +170,11 @@ function App() {
           <p>Pressure {data?.main?.pressure ?? 0}hPa</p>
           <p>Humidity {data?.main?.humidity ?? 0}%</p>
           <p>Visibility {data?.visibility / 1000 ?? 0}km</p>
+        </div>
+      </div>
+      <div className="forecast">
+        <div className="card">
+          <i></i>
         </div>
       </div>
     </StyledApp>
