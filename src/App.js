@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import StyledApp from "./styles/app";
 import axios from "axios";
+import { AiOutlineSearch } from "react-icons/all";
+import moment from "moment";
 import Atmos from "./assets/atmos.jpg";
 import Clear from "./assets/clear.jpg";
 import Cloudy from "./assets/cloudy.jpg";
 import Rain from "./assets/rain.jpg";
 import Snow from "./assets/snow.jpg";
 import Thunder from "./assets/thunderstorm.jpg";
-import { AiOutlineSearch } from "react-icons/all";
 
 const API_KEY = "fde1407fe24dea0c61cd7c4b060cc81d";
 
@@ -63,6 +64,27 @@ function App() {
       default:
         setIcon(weatherIcon.Clouds);
         setBg(Cloudy);
+    }
+  };
+
+  const getForecastIcons = (icons, rangeId) => {
+    switch (true) {
+      case rangeId >= 200 && rangeId <= 232:
+        return weatherIcon.Thunderstorm;
+      case rangeId >= 300 && rangeId <= 321:
+        return weatherIcon.Drizzle;
+      case rangeId >= 500 && rangeId <= 531:
+        return weatherIcon.Rain;
+      case rangeId >= 600 && rangeId <= 622:
+        return weatherIcon.Snow;
+      case rangeId >= 701 && rangeId <= 781:
+        return weatherIcon.Atmosphere;
+      case rangeId === 800:
+        return weatherIcon.Clear;
+      case rangeId >= 801 && rangeId <= 804:
+        return weatherIcon.Clouds;
+      default:
+        return weatherIcon.Clouds;
     }
   };
 
@@ -173,9 +195,22 @@ function App() {
         </div>
       </div>
       <div className="forecast">
-        <div className="card">
-          <i></i>
-        </div>
+        {forecast?.list?.map((item) => (
+          <div className="card">
+            <h3>{moment(item?.dt_txt).format("ddd,MMM D")}</h3>
+            <h2>
+              {calCelsius(item?.main?.temp_max) ?? 0}/
+              {calCelsius(data?.main?.temp_min) ?? 0}&#186;C
+            </h2>
+            <p>{item?.weather?.[0]?.description}</p>
+            <i
+              className={`wi ${getForecastIcons(
+                weatherIcon,
+                item?.weather?.[0]?.id
+              )} display-1 card__icon`}
+            />
+          </div>
+        ))}
       </div>
     </StyledApp>
   );
