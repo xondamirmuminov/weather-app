@@ -94,6 +94,19 @@ const StyledApp = styled.section`
       }
     }
   }
+  .forecast {
+    display: flex;
+    justify-content: center;
+    column-gap: 25px;
+    row-gap: 25px;
+    flex-wrap: wrap;
+
+    .card {
+      display: flex;
+      align-items: center;
+      column-gap: 15px;
+    }
+  }
 `;
 
 export default StyledApp;

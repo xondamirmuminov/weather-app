@@ -11,7 +11,7 @@ import Snow from "./assets/snow.jpg";
 import Thunder from "./assets/thunderstorm.jpg";
 
 const API_KEY = "fde1407fe24dea0c61cd7c4b060cc81d";
-
+const API_URL = "https://api.openweathermap.org/data/2.5/";
 function App() {
   const [data, setData] = useState({});
   const [forecast, setForecast] = useState({});
@@ -98,20 +98,20 @@ function App() {
     const { latitude, longitude } = position?.coords;
     if (latitude && longitude) {
       const { data } = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+        `${API_URL}weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
       );
       setData(data);
       const { data: forecast } =
-        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&lat=${latitude}&lon=${longitude}&cnt=8&appid=${API_KEY}
+        await axios.get(`${API_URL}forecast?id=524901&lat=${latitude}&lon=${longitude}&appid=${API_KEY}
       `);
       setForecast(forecast);
     } else {
       const { data } = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${API_KEY}`
+        `${API_URL}weather?q=London&appid=${API_KEY}`
       );
       setData(data);
       const { data: forecast } =
-        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&q=London&cnt=8&appid=${API_KEY}
+        await axios.get(`${API_URL}forecast?id=524901&q=London&appid=${API_KEY}
     `);
       setForecast(forecast);
     }
@@ -134,7 +134,7 @@ function App() {
       );
       setData(data);
       const { data: forecast } =
-        await axios.get(`https://api.openweathermap.org/data/2.5/forecast?id=524901&q=${search.city},${search.country}&cnt=8&appid=${API_KEY}
+        await axios.get(`${API_URL}forecast?id=524901&q=${search.city},${search.country}&appid=${API_KEY}
   `);
       setForecast(forecast);
     } else {
